@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'up1';
+    src: url(./1up.ttf);
+}
+
+h1{
+    font-family: 'up1' ;
+    font-weight: 500;
+}
