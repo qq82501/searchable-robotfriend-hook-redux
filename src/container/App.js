@@ -1,8 +1,8 @@
 import React from "react";
 import Cardlist from "../component/Cardlist";
 import Searchbox from "../component/Searchbox";
+import ErrorBoundary from "../component/ErrorBoundary";
 import Scroll from "../component/Scroll";
-// import { robots } from "./robots";
 import { Component } from "react";
 import "./App.css";
 
@@ -29,12 +29,13 @@ class App extends Component{
   }
   render(){
     const {robots,searchfield} = this.state
+    
     //從原本的robots當中，篩選出新的robot(array)，
-    //需包含searchfield為篩選條件
+    //需包含searchfield做為篩選條件
     const filteredRobot = robots.filter(robot =>{
       return robot.name.toLowerCase().includes(searchfield.toLowerCase())
       })
-
+      // 也可寫成 if(!robots.length)
       if (robots.length === 0) {
         return <h1 className="tc">Loading</h1>
       }
@@ -47,7 +48,9 @@ class App extends Component{
        {/* 為了將Cardlist包住，Scroll不像Searchbox/Cardlist是單行封閉的形式 
            而是如div一樣包裹住內容，此時Cardlist為Scroll的Children*/}
               <Scroll>
-                <Cardlist robots ={filteredRobot} />
+                <ErrorBoundary>
+                  <Cardlist robots ={filteredRobot} />
+                </ErrorBoundary>
               </Scroll>
             </div>
           )
