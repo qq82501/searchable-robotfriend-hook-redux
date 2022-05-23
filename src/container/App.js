@@ -1,21 +1,37 @@
 import React, {useState, useEffect} from "react";
+import { connect } from "react-redux";
 import Cardlist from "../component/Cardlist";
 import Searchbox from "../component/Searchbox";
 import ErrorBoundary from "../component/ErrorBoundary";
 import Scroll from "../component/Scroll";
 import "./App.css";
+import { setSearchfiled, requestRobots } from "../action";
 
+const mapStateToProps = (state) =>{
+  return {searchField: state.searchRobots.searchField,
+          robots: state.requestRobots.robots,
+          isPending: state.requestRobots.isPending,
+          error: state.requestRobots.error}
+}
+const mapDispatchToProps = (dispatch) =>{
+  return{
+    onSearchChange: (event) =>{dispatch(setSearchfiled(event.target.value))},
+    onRequestRobots: () =>{dispatch(requestRobots())}
+  }
+}
 
-function App (){
+function App (props){
 
-  const [robots, setRobots] =  useState([]);
-  const [searchfield, setSearchfiled] = useState('');
+  // const [robots, setRobots] =  useState([]);
+  // const [searchfield, setSearchfiled] = useState('');
   const [count, setCount] = useState(0);
 
   useEffect(()=>{
-    fetch('https://jsonplaceholder.typicode.com/users')
-    .then(Response => {return Response.json();})
-    .then(users =>{setRobots(users)})
+    // console.log(props.store.getState())
+    // fetch('https://jsonplaceholder.typicode.com/users')(
+    // .then(Response => {return Response.json();})
+    // .then(users =>{setRobots(users)})
+    props.onRequestRobots();
     console.log(count)
   },[count]) 
   //usEffect，有兩個參數，每當function render一次就會執行一次 = > userEffect(a,b)，a表示要執行的動作，b表示dependency
@@ -23,17 +39,19 @@ function App (){
   //依該例子來說，只有當count的value有改變時，才會重新re-renser function App
 
 
-   const onSearchChange = (event) =>{
-     setSearchfiled(event.target.value)
-   }
+  //  const onSearchChange = (event) =>{
+  //    setSearchfiled(event.target.value)
+  //  }
 
      //從原本的robots當中，篩選出新的robot(array)，
      //需包含searchfield做為篩選條件
+    //  const {searchfield, onSearchChange} = props
+     const {robots, isPending, searchField, onSearchChange} = props;
      const filteredRobot = robots.filter(robot =>{
-       return robot.name.toLowerCase().includes(searchfield.toLowerCase())
+       return robot.name.toLowerCase().includes(searchField.toLowerCase())
        })
        // 也可寫成 if(!robots.length)
-       if (robots.length === 0) {
+       if (isPending) {
          return <h1 className="tc">Loading</h1>
        }
        else{
@@ -55,4 +73,4 @@ function App (){
   
          }
      }
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps )(App);
